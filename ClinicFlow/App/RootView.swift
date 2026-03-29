@@ -10,6 +10,7 @@ struct RootView: View {
         case doctorOnboarding
         case doctorRegistration
         case doctorVerificationDocuments
+        case doctorVerificationStatus(DoctorVerificationStatus)
     }
 
     var body: some View {
@@ -61,7 +62,29 @@ struct RootView: View {
                     )
 
                 case .doctorVerificationDocuments:
-                    DoctorVerificationDocumentsView()
+                    DoctorVerificationDocumentsView(
+                        onContinueTap: {
+                            path.append(Route.doctorVerificationStatus(DoctorVerificationStatus.pendingReview))
+                        }
+                    )
+
+                case .doctorVerificationStatus(let status):
+                    DoctorVerificationStatusFlowView(
+                        initialStatus: status,
+                        rejectionReason: "The uploaded medical license file was unclear. Please upload a clearer document.",
+                        onCloseTap: {
+                            path = NavigationPath()
+                        },
+                        onContinueAfterApprovalTap: {
+                            path = NavigationPath()
+                            // Future: navigate to doctor dashboard or clinic setup
+                        },
+                        onResubmitTap: {
+                            if !path.isEmpty {
+                                path.removeLast()
+                            }
+                        }
+                    )
                 }
             }
         }
