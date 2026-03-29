@@ -9,6 +9,7 @@ struct RootView: View {
         case signIn
         case doctorOnboarding
         case doctorRegistration
+        case doctorVerificationDocuments
     }
 
     var body: some View {
@@ -29,6 +30,7 @@ struct RootView: View {
                             path.append(Route.signIn)
                         },
                         onContinueAsGuestTap: {
+                            // Future guest flow
                         },
                         onJoinAsDoctorTap: {
                             path.append(Route.doctorOnboarding)
@@ -54,9 +56,12 @@ struct RootView: View {
                 case .doctorRegistration:
                     DoctorRegistrationView(
                         onContinueTap: {
-                            // Future next doctor onboarding step
+                            path.append(Route.doctorVerificationDocuments)
                         }
                     )
+
+                case .doctorVerificationDocuments:
+                    DoctorVerificationDocumentsView()
                 }
             }
         }
