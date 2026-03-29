@@ -1,9 +1,9 @@
-
 import SwiftUI
 
 struct SplashView: View {
 
-    
+    var onFinished: () -> Void = {}
+
     @State private var orbScale: CGFloat       = 0.3
     @State private var orbOpacity: Double      = 0
     @State private var logoScale: CGFloat      = 0.4
@@ -21,11 +21,9 @@ struct SplashView: View {
 
     var body: some View {
         ZStack {
-           
             AppColors.backgroundDark
                 .ignoresSafeArea()
 
-      
             RadialGradient(
                 colors: [
                     AppColors.primary.opacity(0.25),
@@ -40,14 +38,12 @@ struct SplashView: View {
             .scaleEffect(orbScale)
             .opacity(orbOpacity)
 
- 
             Circle()
                 .fill(AppColors.primaryDark.opacity(0.4))
                 .frame(width: 280, height: 280)
                 .blur(radius: 60)
                 .offset(x: -100, y: -280)
                 .opacity(orbOpacity)
-
 
             Circle()
                 .fill(AppColors.accent.opacity(0.2))
@@ -56,7 +52,6 @@ struct SplashView: View {
                 .offset(x: 120, y: 320)
                 .opacity(orbOpacity)
 
-          
             ZStack {
                 ForEach([1, 2, 3], id: \.self) { i in
                     Circle()
@@ -73,11 +68,9 @@ struct SplashView: View {
             .scaleEffect(ringScale)
             .opacity(ringOpacity)
 
-          
             VStack(spacing: 0) {
                 Spacer()
 
-             
                 ZStack {
                     Circle()
                         .stroke(AppColors.primary.opacity(0.3), lineWidth: 1.5)
@@ -85,7 +78,6 @@ struct SplashView: View {
                         .scaleEffect(pulseScale)
                         .opacity(logoOpacity * (2 - pulseScale))
 
-        
                     Circle()
                         .fill(
                             LinearGradient(
@@ -101,12 +93,10 @@ struct SplashView: View {
                         .shadow(color: AppColors.primary.opacity(logoGlow), radius: 28, x: 0, y: 8)
                         .shadow(color: AppColors.accent.opacity(logoGlow * 0.5), radius: 48, x: 0, y: 0)
 
-                   
                     ClinicIconShape()
                         .fill(Color.white)
                         .frame(width: 38, height: 38)
 
-                  
                     RoundedRectangle(cornerRadius: 44)
                         .fill(
                             LinearGradient(
@@ -129,7 +119,6 @@ struct SplashView: View {
 
                 Spacer().frame(height: 32)
 
-               
                 Text("ClinicFlow")
                     .font(.system(size: 38, weight: .bold, design: .rounded))
                     .foregroundStyle(
@@ -144,7 +133,6 @@ struct SplashView: View {
 
                 Spacer().frame(height: 10)
 
-               
                 Text("Smart care, seamlessly managed")
                     .font(.system(size: 15, weight: .regular, design: .rounded))
                     .foregroundColor(AppColors.textSecondary)
@@ -154,9 +142,8 @@ struct SplashView: View {
 
                 Spacer()
 
-              
                 HStack(spacing: 8) {
-                    ForEach(0..<3) { i in
+                    ForEach(0..<3, id: \.self) { i in
                         LoadingDot(delay: Double(i) * 0.18)
                     }
                 }
@@ -164,56 +151,52 @@ struct SplashView: View {
                 .padding(.bottom, 60)
             }
         }
-        .onAppear { runAnimations() }
+        .onAppear {
+            runAnimations()
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.8) {
+                onFinished()
+            }
+        }
     }
 
-   
     private func runAnimations() {
-       
         withAnimation(.easeOut(duration: 0.9)) {
             orbScale = 1.0
             orbOpacity = 1.0
         }
 
-       
         withAnimation(.spring(response: 1.1, dampingFraction: 0.7).delay(0.1)) {
             ringScale = 1.0
             ringOpacity = 1.0
         }
 
-       
         withAnimation(.spring(response: 0.7, dampingFraction: 0.6).delay(0.3)) {
             logoScale = 1.0
             logoOpacity = 1.0
         }
 
-       
         withAnimation(.easeIn(duration: 0.5).delay(0.7)) {
             logoGlow = 0.7
         }
 
-     
         withAnimation(.easeInOut(duration: 0.8).delay(0.9)) {
             shimmerOffset = 200
         }
 
-       
         withAnimation(.spring(response: 0.6, dampingFraction: 0.75).delay(0.6)) {
             titleOffset = 0
             titleOpacity = 1.0
         }
 
-      
         withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.8)) {
             taglineOffset = 0
             taglineOpacity = 1.0
         }
 
-       
         withAnimation(.easeIn(duration: 0.4).delay(1.1)) {
             dotsOpacity = 1.0
         }
-
 
         withAnimation(.easeOut(duration: 0.6).delay(0.9)) {
             pulseScale = 1.6
@@ -229,16 +212,16 @@ struct ClinicIconShape: Shape {
         let h = rect.height
         let t: CGFloat = 0.28
 
-
         path.addRoundedRect(
-            in: CGRect(x: w * (0.5 - t/2), y: 0, width: w * t, height: h),
+            in: CGRect(x: w * (0.5 - t / 2), y: 0, width: w * t, height: h),
             cornerSize: CGSize(width: w * t * 0.4, height: w * t * 0.4)
         )
 
         path.addRoundedRect(
-            in: CGRect(x: 0, y: h * (0.5 - t/2), width: w, height: h * t),
+            in: CGRect(x: 0, y: h * (0.5 - t / 2), width: w, height: h * t),
             cornerSize: CGSize(width: h * t * 0.4, height: h * t * 0.4)
         )
+
         return path
     }
 }
@@ -258,8 +241,8 @@ struct LoadingDot: View {
             .onAppear {
                 withAnimation(
                     .easeInOut(duration: 0.55)
-                    .repeatForever(autoreverses: true)
-                    .delay(delay)
+                        .repeatForever(autoreverses: true)
+                        .delay(delay)
                 ) {
                     offsetY = -8
                     opacity = 1.0
@@ -267,7 +250,6 @@ struct LoadingDot: View {
             }
     }
 }
-
 
 #Preview {
     SplashView()

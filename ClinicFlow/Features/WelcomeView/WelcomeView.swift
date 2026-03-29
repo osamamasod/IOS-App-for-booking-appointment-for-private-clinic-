@@ -2,6 +2,11 @@ import SwiftUI
 
 struct WelcomeView: View {
 
+    var onCreateAccountTap: () -> Void = {}
+    var onSignInTap: () -> Void = {}
+    var onContinueAsGuestTap: () -> Void = {}
+    var onJoinAsDoctorTap: () -> Void = {}
+
     @State private var backgroundOpacity: Double  = 0
     @State private var logoScale: CGFloat         = 0.5
     @State private var logoOpacity: Double        = 0
@@ -14,7 +19,6 @@ struct WelcomeView: View {
     @State private var topBadgeOpacity: Double    = 0
     @State private var topBadgeOffset: CGFloat    = -10
     @State private var activeFeature: Int         = 0
-
     let features: [FeatureItem] = [
         FeatureItem(icon: "calendar.badge.plus",       title: "Smart Booking",  description: "Schedule appointments in seconds"),
         FeatureItem(icon: "stethoscope",               title: "Top Doctors",    description: "Connect with verified specialists"),
@@ -49,7 +53,13 @@ struct WelcomeView: View {
                         .fill(AppColors.primaryGlow)
                         .frame(width: 80, height: 80)
                     Circle()
-                        .fill(LinearGradient(colors: [AppColors.primary, AppColors.primaryDark], startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .fill(
+                            LinearGradient(
+                                colors: [AppColors.primary, AppColors.primaryDark],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                         .frame(width: 64, height: 64)
                         .shadow(color: AppColors.primary.opacity(0.5), radius: 20, x: 0, y: 8)
                     ClinicIconShape()
@@ -65,9 +75,17 @@ struct WelcomeView: View {
                     Text("Welcome to")
                         .font(.system(size: 18, weight: .regular, design: .rounded))
                         .foregroundColor(AppColors.textSecondary)
+
                     Text("ClinicFlow")
                         .font(.system(size: 42, weight: .bold, design: .rounded))
-                        .foregroundStyle(LinearGradient(colors: [.white, AppColors.primaryLight], startPoint: .leading, endPoint: .trailing))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.white, AppColors.primaryLight],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+
                     Text("Smart care, seamlessly managed")
                         .font(.system(size: 15, weight: .regular, design: .rounded))
                         .foregroundColor(AppColors.textMuted)
@@ -85,7 +103,9 @@ struct WelcomeView: View {
                                 .fill(i == activeFeature ? AppColors.primary : AppColors.primary.opacity(0.2))
                                 .frame(height: 4)
                                 .animation(.spring(response: 0.4, dampingFraction: 0.8), value: activeFeature)
-                                .onTapGesture { activeFeature = i }
+                                .onTapGesture {
+                                    activeFeature = i
+                                }
                         }
                     }
                     .padding(.horizontal, 40)
@@ -107,13 +127,17 @@ struct WelcomeView: View {
                 Spacer()
 
                 VStack(spacing: 14) {
-                    Button(action: {}) { Text("Create an Account") }
-                        .buttonStyle(PrimaryButtonStyle())
+                    Button(action: onCreateAccountTap) {
+                        Text("Create an Account")
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
 
-                    Button(action: {}) { Text("Sign In") }
-                        .buttonStyle(OutlineButtonStyle())
+                    Button(action: onSignInTap) {
+                        Text("Sign In")
+                    }
+                    .buttonStyle(OutlineButtonStyle())
 
-                    Button(action: {}) {
+                    Button(action: onContinueAsGuestTap) {
                         Text("Continue as guest")
                             .font(.system(size: 14, weight: .regular, design: .rounded))
                             .foregroundColor(AppColors.textMuted)
@@ -126,13 +150,14 @@ struct WelcomeView: View {
                 .opacity(buttonsOpacity)
             }
 
-            // Join as Doctor — top right corner
             HStack {
                 Spacer()
-                Button(action: {}) {
+
+                Button(action: onJoinAsDoctorTap) {
                     HStack(spacing: 6) {
                         Image(systemName: "stethoscope")
                             .font(.system(size: 12, weight: .semibold))
+
                         Text("Join as Doctor")
                             .font(.system(size: 13, weight: .semibold, design: .rounded))
                     }
@@ -142,7 +167,10 @@ struct WelcomeView: View {
                     .background(
                         Capsule()
                             .fill(AppColors.primary.opacity(0.15))
-                            .overlay(Capsule().stroke(AppColors.primaryLight.opacity(0.3), lineWidth: 1))
+                            .overlay(
+                                Capsule()
+                                    .stroke(AppColors.primaryLight.opacity(0.3), lineWidth: 1)
+                            )
                     )
                 }
                 .padding(.top, 56)
@@ -151,6 +179,7 @@ struct WelcomeView: View {
                 .offset(y: topBadgeOffset)
             }
         }
+        .navigationBarHidden(true)
         .onAppear {
             runAnimations()
             startFeatureAutoScroll()
@@ -158,23 +187,30 @@ struct WelcomeView: View {
     }
 
     private func runAnimations() {
-        withAnimation(.easeOut(duration: 0.8)) { backgroundOpacity = 1 }
+        withAnimation(.easeOut(duration: 0.8)) {
+            backgroundOpacity = 1
+        }
+
         withAnimation(.spring(response: 0.5, dampingFraction: 0.7).delay(0.2)) {
             topBadgeOpacity = 1
             topBadgeOffset = 0
         }
+
         withAnimation(.spring(response: 0.7, dampingFraction: 0.65).delay(0.2)) {
             logoScale = 1
             logoOpacity = 1
         }
+
         withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.4)) {
             headlineOffset = 0
             headlineOpacity = 1
         }
+
         withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.55)) {
             featuresOpacity = 1
             featuresOffset = 0
         }
+
         withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.7)) {
             buttonsOffset = 0
             buttonsOpacity = 1
@@ -205,34 +241,49 @@ struct FeatureCard: View {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(AppColors.primaryGlow)
                     .frame(width: 64, height: 64)
+
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .stroke(AppColors.primaryLight.opacity(0.2), lineWidth: 1)
                     .frame(width: 64, height: 64)
+
                 Image(systemName: item.icon)
                     .font(.system(size: 26, weight: .medium))
-                    .foregroundStyle(LinearGradient(colors: [AppColors.primaryLight, AppColors.accent], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [AppColors.primaryLight, AppColors.accent],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
             }
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(item.title)
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
+
                 Text(item.description)
                     .font(.system(size: 14, weight: .regular, design: .rounded))
                     .foregroundColor(AppColors.textSecondary)
                     .lineLimit(2)
             }
+
             Spacer()
         }
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(AppColors.backgroundCard)
-                .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(AppColors.primaryLight.opacity(0.1), lineWidth: 1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(AppColors.primaryLight.opacity(0.1), lineWidth: 1)
+                )
         )
     }
 }
 
 #Preview {
-    WelcomeView()
+    NavigationStack {
+        WelcomeView()
+    }
 }

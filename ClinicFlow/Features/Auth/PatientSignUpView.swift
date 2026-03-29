@@ -309,9 +309,12 @@ struct PatientSignUpView: View {
                             Text("Already have an account?")
                                 .font(.system(size: 14, design: .rounded))
                                 .foregroundColor(AppColors.textMuted)
-                            Button("Sign In") {}
-                                .font(.system(size: 14, weight: .semibold, design: .rounded))
-                                .foregroundColor(AppColors.primaryLight)
+
+                            NavigationLink(destination: PatientLogInView()) {
+                                Text("Sign In")
+                                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                                    .foregroundColor(AppColors.primaryLight)
+                            }
                         }
                     }
                 }
