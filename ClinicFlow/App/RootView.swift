@@ -14,6 +14,7 @@ struct RootView: View {
         case doctorRegistration
         case doctorVerificationDocuments
         case doctorVerificationStatus(DoctorVerificationStatus)
+        case clinicDetails
     }
 
     var body: some View {
@@ -71,21 +72,20 @@ struct RootView: View {
                         flowMode: verificationDocumentsFlowMode,
                         rejectionReason: currentRejectionReason,
                         onContinueTap: {
-                            currentRejectionReason = "The uploaded medical license file was unclear. Please upload a clearer document."
-                            path.append(Route.doctorVerificationStatus(.rejected))
+                            currentRejectionReason = nil
+                            path.append(Route.doctorVerificationStatus(.approved))
                         }
                     )
 
                 case .doctorVerificationStatus(let status):
                     DoctorVerificationStatusFlowView(
                         initialStatus: status,
-                        rejectionReason: currentRejectionReason ?? "The uploaded medical license file was unclear. Please upload a clearer document.",
+                        rejectionReason: currentRejectionReason,
                         onCloseTap: {
                             path = NavigationPath()
                         },
                         onContinueAfterApprovalTap: {
-                            path = NavigationPath()
-                            // Future: navigate to doctor dashboard or clinic setup
+                            path.append(Route.clinicDetails)
                         },
                         onResubmitTap: {
                             verificationDocumentsFlowMode = .resubmission
@@ -97,6 +97,13 @@ struct RootView: View {
                             if !path.isEmpty {
                                 path.removeLast()
                             }
+                        }
+                    )
+
+                case .clinicDetails:
+                    ClinicDetailsView(
+                        onContinueTap: {
+                            // Future: navigate to next clinic setup step
                         }
                     )
                 }
