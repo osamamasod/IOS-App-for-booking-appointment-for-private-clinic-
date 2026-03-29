@@ -16,6 +16,7 @@ struct RootView: View {
         case doctorVerificationStatus(DoctorVerificationStatus)
         case clinicDetails
         case servicesAndPricing
+        case workingSchedule
     }
 
     var body: some View {
@@ -111,7 +112,14 @@ struct RootView: View {
                 case .servicesAndPricing:
                     ServicesAndPricingView(
                         onContinueTap: {
-                            // Future: navigate to next clinic setup step
+                            path.append(Route.workingSchedule)
+                        }
+                    )
+
+                case .workingSchedule:
+                    WorkingScheduleView(
+                        onFinishTap: {
+                            path = NavigationPath()
                         }
                     )
                 }
