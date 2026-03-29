@@ -4,6 +4,9 @@ struct RootView: View {
     @State private var showSplash = true
     @State private var path = NavigationPath()
 
+    @State private var verificationDocumentsFlowMode: DoctorVerificationDocumentsFlowMode = .initialSubmission
+    @State private var currentRejectionReason: String? = nil
+
     enum Route: Hashable {
         case signUp
         case signIn
@@ -57,21 +60,26 @@ struct RootView: View {
                 case .doctorRegistration:
                     DoctorRegistrationView(
                         onContinueTap: {
+                            verificationDocumentsFlowMode = .initialSubmission
+                            currentRejectionReason = nil
                             path.append(Route.doctorVerificationDocuments)
                         }
                     )
 
                 case .doctorVerificationDocuments:
                     DoctorVerificationDocumentsView(
+                        flowMode: verificationDocumentsFlowMode,
+                        rejectionReason: currentRejectionReason,
                         onContinueTap: {
-                            path.append(Route.doctorVerificationStatus(DoctorVerificationStatus.pendingReview))
+                            currentRejectionReason = "The uploaded medical license file was unclear. Please upload a clearer document."
+                            path.append(Route.doctorVerificationStatus(.rejected))
                         }
                     )
 
                 case .doctorVerificationStatus(let status):
                     DoctorVerificationStatusFlowView(
                         initialStatus: status,
-                        rejectionReason: "The uploaded medical license file was unclear. Please upload a clearer document.",
+                        rejectionReason: currentRejectionReason ?? "The uploaded medical license file was unclear. Please upload a clearer document.",
                         onCloseTap: {
                             path = NavigationPath()
                         },
@@ -80,6 +88,12 @@ struct RootView: View {
                             // Future: navigate to doctor dashboard or clinic setup
                         },
                         onResubmitTap: {
+                            verificationDocumentsFlowMode = .resubmission
+
+                            if currentRejectionReason == nil {
+                                currentRejectionReason = "The uploaded medical license file was unclear. Please upload a clearer document."
+                            }
+
                             if !path.isEmpty {
                                 path.removeLast()
                             }
