@@ -1,19 +1,17 @@
-//
-//  DoctorVerificationDocumentsView.swift
-//  ClinicFlow
-//
-//  Created by Osama Masoud on 30/03/2026.
-//
-
-
 import SwiftUI
 
 struct DoctorVerificationDocumentsView: View {
-
     @StateObject private var vm = DoctorVerificationDocumentsViewModel()
     @Environment(\.dismiss) private var dismiss
 
+    let flowMode: DoctorVerificationDocumentsFlowMode
+    let rejectionReason: String?
+
     var onContinueTap: () -> Void = {}
+
+    private var isResubmission: Bool {
+        flowMode == .resubmission
+    }
 
     var body: some View {
         ZStack {
@@ -35,7 +33,6 @@ struct DoctorVerificationDocumentsView: View {
             .ignoresSafeArea()
 
             VStack(spacing: 0) {
-
                 HStack {
                     Button(action: { dismiss() }) {
                         ZStack {
@@ -66,9 +63,8 @@ struct DoctorVerificationDocumentsView: View {
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
-
                         VStack(spacing: 8) {
-                            Text("Verification Documents")
+                            Text(isResubmission ? "Update Verification Documents" : "Verification Documents")
                                 .font(.system(size: 30, weight: .bold, design: .rounded))
                                 .foregroundStyle(
                                     LinearGradient(
@@ -78,14 +74,25 @@ struct DoctorVerificationDocumentsView: View {
                                     )
                                 )
 
-                            Text("Upload your medical license and any supporting documents to prepare your verification request.")
-                                .font(.system(size: 15, weight: .regular, design: .rounded))
-                                .foregroundColor(AppColors.textMuted)
+                            Text(
+                                isResubmission
+                                ? "Review the rejection reason, correct your files, and resubmit your verification request."
+                                : "Upload your medical license and any supporting documents to prepare your verification request."
+                            )
+                            .font(.system(size: 15, weight: .regular, design: .rounded))
+                            .foregroundColor(AppColors.textMuted)
+                            .multilineTextAlignment(.leading)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 24)
                         .padding(.top, 28)
                         .padding(.bottom, 24)
+
+                        if isResubmission {
+                            resubmissionReasonCard
+                                .padding(.horizontal, 24)
+                                .padding(.bottom, 18)
+                        }
 
                         guidanceCard
                             .padding(.horizontal, 24)
@@ -120,6 +127,7 @@ struct DoctorVerificationDocumentsView: View {
                             HStack(spacing: 6) {
                                 Image(systemName: "exclamationmark.triangle.fill")
                                     .font(.system(size: 12))
+
                                 Text(generalError)
                                     .font(.system(size: 13, design: .rounded))
                             }
@@ -145,16 +153,24 @@ struct DoctorVerificationDocumentsView: View {
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                             }
 
-                            Text(vm.isLoading ? "Preparing..." : "Continue")
+                            Text(
+                                vm.isLoading
+                                ? (isResubmission ? "Resubmitting..." : "Preparing...")
+                                : (isResubmission ? "Resubmit for Review" : "Continue")
+                            )
                         }
                     }
                     .buttonStyle(PrimaryButtonStyle())
                     .disabled(vm.isLoading)
 
-                    Text("Files are currently local placeholders and will be connected to real upload handling later.")
-                        .font(.system(size: 12, design: .rounded))
-                        .foregroundColor(AppColors.textMuted)
-                        .multilineTextAlignment(.center)
+                    Text(
+                        isResubmission
+                        ? "Your updated files will be sent again for review after resubmission."
+                        : "Files are currently local placeholders and will be connected to real upload handling later."
+                    )
+                    .font(.system(size: 12, design: .rounded))
+                    .foregroundColor(AppColors.textMuted)
+                    .multilineTextAlignment(.center)
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 36)
@@ -172,6 +188,39 @@ struct DoctorVerificationDocumentsView: View {
         .navigationBarHidden(true)
     }
 
+    private var resubmissionReasonCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(AppColors.error.opacity(0.14))
+                        .frame(width: 36, height: 36)
+
+                    Image(systemName: "exclamationmark.bubble.fill")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundColor(AppColors.error)
+                }
+
+                Text("Rejection Reason")
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white)
+            }
+
+            Text(rejectionReason ?? "Your previous submission needs correction before it can be approved.")
+                .font(.system(size: 14, weight: .regular, design: .rounded))
+                .foregroundColor(AppColors.textSecondary)
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(AppColors.backgroundCard)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .stroke(AppColors.error.opacity(0.28), lineWidth: 1)
+                )
+        )
+    }
+
     private var guidanceCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
@@ -185,15 +234,21 @@ struct DoctorVerificationDocumentsView: View {
                         .foregroundColor(AppColors.primaryLight)
                 }
 
-                Text("Verification Guidance")
+                Text(isResubmission ? "Resubmission Guidance" : "Verification Guidance")
                     .font(.system(size: 16, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                guidanceRow("Your medical license is required before your doctor account can be reviewed.")
-                guidanceRow("Supporting documents can strengthen the verification request.")
-                guidanceRow("This step currently prepares the frontend flow for future upload integration.")
+                if isResubmission {
+                    guidanceRow("Review the rejection reason and update the required files before submitting again.")
+                    guidanceRow("Replace any unclear, incomplete, or incorrect documents.")
+                    guidanceRow("Your updated submission is prepared for future backend-connected verification review.")
+                } else {
+                    guidanceRow("Your medical license is required before your doctor account can be reviewed.")
+                    guidanceRow("Supporting documents can strengthen the verification request.")
+                    guidanceRow("This step currently prepares the frontend flow for future upload integration.")
+                }
             }
         }
         .padding(16)
@@ -303,6 +358,7 @@ struct DoctorVerificationDocumentsView: View {
                 HStack(spacing: 4) {
                     Image(systemName: "exclamationmark.circle.fill")
                         .font(.system(size: 11))
+
                     Text(error)
                         .font(.system(size: 12, design: .rounded))
                 }
@@ -321,8 +377,20 @@ struct DoctorVerificationDocumentsView: View {
     }
 }
 
-#Preview {
+#Preview("Initial") {
     NavigationStack {
-        DoctorVerificationDocumentsView()
+        DoctorVerificationDocumentsView(
+            flowMode: .initialSubmission,
+            rejectionReason: nil
+        )
+    }
+}
+
+#Preview("Resubmission") {
+    NavigationStack {
+        DoctorVerificationDocumentsView(
+            flowMode: .resubmission,
+            rejectionReason: "The uploaded medical license was unclear. Please upload a clearer file."
+        )
     }
 }
