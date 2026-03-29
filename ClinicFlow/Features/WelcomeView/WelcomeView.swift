@@ -6,7 +6,6 @@ struct WelcomeView: View {
     var onSignInTap: () -> Void = {}
     var onContinueAsGuestTap: () -> Void = {}
     var onJoinAsDoctorTap: () -> Void = {}
-
     @State private var backgroundOpacity: Double  = 0
     @State private var logoScale: CGFloat         = 0.5
     @State private var logoOpacity: Double        = 0

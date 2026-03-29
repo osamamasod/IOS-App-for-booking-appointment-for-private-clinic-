@@ -7,6 +7,7 @@ struct RootView: View {
     enum Route: Hashable {
         case signUp
         case signIn
+        case doctorOnboarding
     }
 
     var body: some View {
@@ -27,8 +28,10 @@ struct RootView: View {
                             path.append(Route.signIn)
                         },
                         onContinueAsGuestTap: {
+                            // future guest flow
                         },
                         onJoinAsDoctorTap: {
+                            path.append(Route.doctorOnboarding)
                         }
                     )
                 }
@@ -39,6 +42,8 @@ struct RootView: View {
                     PatientSignUpView()
                 case .signIn:
                     PatientLogInView()
+                case .doctorOnboarding:
+                    DoctorOnboardingEntryView()
                 }
             }
         }
