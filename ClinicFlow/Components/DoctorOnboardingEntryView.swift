@@ -1,15 +1,9 @@
-//
-//  DoctorOnboardingEntryView.swift
-//  ClinicFlow
-//
-//  Created by Osama Masoud on 29/03/2026.
-//
-
-
 import SwiftUI
 
 struct DoctorOnboardingEntryView: View {
     @Environment(\.dismiss) private var dismiss
+
+    var onContinueTap: () -> Void = {}
 
     var body: some View {
         ZStack {
@@ -47,12 +41,18 @@ struct DoctorOnboardingEntryView: View {
                             )
                         )
 
-                    Text("This is the entry point for the doctor onboarding flow.")
+                    Text("Start your onboarding journey to join ClinicFlow as a doctor.")
                         .font(.system(size: 15, weight: .regular, design: .rounded))
                         .foregroundColor(AppColors.textMuted)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
                 }
+
+                Button(action: onContinueTap) {
+                    Text("Continue")
+                }
+                .buttonStyle(PrimaryButtonStyle(isFullWidth: false))
+                .padding(.top, 8)
 
                 Spacer()
             }
