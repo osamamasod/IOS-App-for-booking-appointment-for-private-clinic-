@@ -125,43 +125,30 @@ struct PatientHomeView: View {
     }
 
     // MARK: - Search Bar
+    // Replace the searchBar var in PatientHomeView with this:
     private var searchBar: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(AppColors.textMuted)
-
-            TextField(
-                "",
-                text: $vm.searchText,
-                prompt: Text("Search doctors, specialties...")
+        NavigationLink(destination: DoctorSearchView()) {
+            HStack(spacing: 12) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 16, weight: .medium))
                     .foregroundColor(AppColors.textMuted)
-            )
-            .font(.system(size: 15, design: .rounded))
-            .foregroundColor(.white)
-            .autocapitalization(.none)
-            .disableAutocorrection(true)
-
-            if !vm.searchText.isEmpty {
-                Button(action: { vm.searchText = "" }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 15))
-                        .foregroundColor(AppColors.textMuted)
-                }
+                Text("Search doctors, specialties...")
+                    .font(.system(size: 15, design: .rounded))
+                    .foregroundColor(AppColors.textMuted)
+                Spacer()
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(AppColors.backgroundCard)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(AppColors.primaryLight.opacity(0.15), lineWidth: 1)
+                    )
+            )
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(AppColors.backgroundCard)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(AppColors.primaryLight.opacity(0.15), lineWidth: 1)
-                )
-        )
     }
-
     // MARK: - Specialty Chips
     private var specialtyChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
