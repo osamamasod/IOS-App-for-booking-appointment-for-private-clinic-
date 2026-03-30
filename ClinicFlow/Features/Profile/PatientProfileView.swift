@@ -5,14 +5,6 @@
 //  Created by Osama Masoud on 31/03/2026.
 //
 
-
-//
-//  PatientProfileView.swift
-//  ClinicFlow
-//
-//  Created by Osama Masoud on 31/03/2026.
-//
-
 import SwiftUI
 
 struct PatientProfileView: View {
@@ -23,7 +15,6 @@ struct PatientProfileView: View {
         ZStack {
             AppColors.backgroundDark.ignoresSafeArea()
 
-            // Ambient background
             ZStack {
                 Circle()
                     .fill(AppColors.primary.opacity(0.12))
@@ -63,8 +54,8 @@ struct PatientProfileView: View {
         }
         .navigationBarHidden(true)
         .sheet(isPresented: $vm.isEditingProfile) {
-            EditProfilePlaceholderView()
-                .presentationDetents([.medium])
+            EditPatientProfileView(vm: vm)
+                .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
         .alert("Sign Out", isPresented: $showSignOutAlert) {
@@ -77,7 +68,6 @@ struct PatientProfileView: View {
         }
     }
 
-    // MARK: - Header
     private var headerSection: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 4) {
@@ -114,7 +104,6 @@ struct PatientProfileView: View {
         }
     }
 
-    // MARK: - Profile Header Card
     private var profileHeaderCard: some View {
         VStack(spacing: 16) {
             ZStack {
@@ -140,7 +129,7 @@ struct PatientProfileView: View {
             }
 
             Button(action: {
-                vm.isEditingProfile = true
+                vm.beginEditing()
             }) {
                 HStack(spacing: 8) {
                     Image(systemName: "square.and.pencil")
@@ -173,7 +162,6 @@ struct PatientProfileView: View {
         )
     }
 
-    // MARK: - Personal Information Section
     private var personalInformationSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Personal Information")
@@ -196,7 +184,7 @@ struct PatientProfileView: View {
                 ProfileInfoRow(
                     icon: "calendar",
                     title: "Date of Birth",
-                    value: vm.dateOfBirth
+                    value: vm.formattedDateOfBirth
                 )
 
                 ProfileInfoRow(
@@ -208,11 +196,10 @@ struct PatientProfileView: View {
         }
     }
 
-    // MARK: - Actions
     private var actionButtons: some View {
         VStack(spacing: 14) {
             Button(action: {
-                vm.isEditingProfile = true
+                vm.beginEditing()
             }) {
                 HStack {
                     Image(systemName: "square.and.pencil")
@@ -272,7 +259,6 @@ struct PatientProfileView: View {
     }
 }
 
-// MARK: - Info Row
 struct ProfileInfoRow: View {
     let icon: String
     let title: String
@@ -311,60 +297,6 @@ struct ProfileInfoRow: View {
                         .stroke(AppColors.primaryLight.opacity(0.12), lineWidth: 1)
                 )
         )
-    }
-}
-
-// MARK: - Edit Profile Placeholder
-struct EditProfilePlaceholderView: View {
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        ZStack {
-            AppColors.backgroundDark.ignoresSafeArea()
-
-            VStack(spacing: 18) {
-                ZStack {
-                    Circle()
-                        .fill(AppColors.primaryGlow)
-                        .frame(width: 84, height: 84)
-
-                    Image(systemName: "square.and.pencil")
-                        .font(.system(size: 28))
-                        .foregroundColor(AppColors.primaryLight)
-                }
-
-                Text("Edit Profile")
-                    .font(.system(size: 22, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
-
-                Text("This is the local entry point to the future edit profile flow.")
-                    .font(.system(size: 14, design: .rounded))
-                    .foregroundColor(AppColors.textMuted)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 28)
-
-                Button(action: {
-                    dismiss()
-                }) {
-                    Text("Close")
-                        .font(.system(size: 15, weight: .semibold, design: .rounded))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(
-                            LinearGradient(
-                                colors: [AppColors.primary, AppColors.primaryDark],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 8)
-            }
-            .padding(.vertical, 32)
-        }
     }
 }
 
