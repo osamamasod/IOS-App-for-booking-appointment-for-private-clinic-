@@ -1,37 +1,28 @@
-
 import Foundation
 
 enum AppTab: String, CaseIterable, Identifiable {
     case home
-    case doctors
     case appointments
+    case favourites
     case profile
-    
+
     var id: String { rawValue }
-    
+
     var title: String {
         switch self {
-        case .home:
-            return "Home"
-        case .doctors:
-            return "Doctors"
-        case .appointments:
-            return "Appointments"
-        case .profile:
-            return "Profile"
+        case .home:         return "Home"
+        case .appointments: return "Appointments"
+        case .favourites:   return "Favourites"
+        case .profile:      return "Profile"
         }
     }
-    
+
     var systemImage: String {
         switch self {
-        case .home:
-            return "house"
-        case .doctors:
-            return "stethoscope"
-        case .appointments:
-            return "calendar"
-        case .profile:
-            return "person"
+        case .home:         return "house.fill"
+        case .appointments: return "calendar"
+        case .favourites:   return "heart.fill"
+        case .profile:      return "person.fill"
         }
     }
 }

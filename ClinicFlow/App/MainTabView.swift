@@ -5,6 +5,7 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
+
             NavigationStack {
                 HomeView()
             }
@@ -12,14 +13,6 @@ struct MainTabView: View {
                 Label(AppTab.home.title, systemImage: AppTab.home.systemImage)
             }
             .tag(AppTab.home)
-
-            NavigationStack {
-                DoctorsView()
-            }
-            .tabItem {
-                Label(AppTab.doctors.title, systemImage: AppTab.doctors.systemImage)
-            }
-            .tag(AppTab.doctors)
 
             NavigationStack {
                 AppointmentsView()
@@ -30,6 +23,14 @@ struct MainTabView: View {
             .tag(AppTab.appointments)
 
             NavigationStack {
+                FavouritesView()
+            }
+            .tabItem {
+                Label(AppTab.favourites.title, systemImage: AppTab.favourites.systemImage)
+            }
+            .tag(AppTab.favourites)
+
+            NavigationStack {
                 ProfileView()
             }
             .tabItem {
@@ -37,7 +38,7 @@ struct MainTabView: View {
             }
             .tag(AppTab.profile)
         }
-        .tint(AppColors.primaryLight)                          // selected tab icon + label color
+        .tint(AppColors.primaryLight)
         .onAppear { applyTabBarAppearance() }
     }
 
@@ -45,20 +46,15 @@ struct MainTabView: View {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
 
-        // Background — matches backgroundCard
         appearance.backgroundColor = UIColor(AppColors.backgroundCard)
-
-        // Top border line
         appearance.shadowColor = UIColor(AppColors.primaryLight.opacity(0.15))
 
-        // Normal (unselected) state
         let normalAttrs: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor(AppColors.textMuted)
         ]
         appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttrs
         appearance.stackedLayoutAppearance.normal.iconColor = UIColor(AppColors.textMuted)
 
-        // Selected state
         let selectedAttrs: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor(AppColors.primaryLight)
         ]
