@@ -7,7 +7,7 @@ struct MainTabView: View {
         TabView(selection: $selectedTab) {
 
             NavigationStack {
-                HomeView()
+                PatientHomeView()
             }
             .tabItem {
                 Label(AppTab.home.title, systemImage: AppTab.home.systemImage)
