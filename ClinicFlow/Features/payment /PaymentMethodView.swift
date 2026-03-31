@@ -11,7 +11,7 @@ import SwiftUI
 struct PaymentMethodView: View {
     @StateObject private var vm: PaymentMethodViewModel
     @Environment(\.dismiss) private var dismiss
-
+    @State private var navigateToBookingConfirmation = false
     var onContinue: ((BookingPaymentMethod) -> Void)?
 
     init(
@@ -62,6 +62,20 @@ struct PaymentMethodView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .animation(.spring(response: 0.35, dampingFraction: 0.8), value: vm.selectedPaymentMethod?.id)
+        .navigationDestination(isPresented: $navigateToBookingConfirmation) {
+            if let paymentMethod = vm.selectedPaymentMethod {
+                BookingConfirmationView(
+                    doctor: vm.doctor,
+                    clinic: vm.clinic,
+                    service: vm.service,
+                    slot: vm.slot,
+                    appointmentDateText: vm.appointmentDateText,
+                    paymentMethod: paymentMethod
+                )
+            } else {
+                EmptyView()
+            }
+        }
     }
 
     // MARK: - Ambient Blobs
@@ -247,8 +261,8 @@ struct PaymentMethodView: View {
             }
 
             Button(action: {
-                guard let method = vm.selectedPaymentMethod else { return }
-                onContinue?(method)
+                guard vm.canContinue else { return }
+                navigateToBookingConfirmation = true
             }) {
                 HStack(spacing: 8) {
                     Image(systemName: "checkmark.circle.fill")
