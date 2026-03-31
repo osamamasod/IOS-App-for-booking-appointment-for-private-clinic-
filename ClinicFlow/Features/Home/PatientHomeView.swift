@@ -191,23 +191,26 @@ struct PatientHomeView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 16) {
                 ForEach(vm.recommendedDoctors) { doctor in
-                    RecommendedDoctorCard(doctor: doctor)
+                    NavigationLink(destination: DoctorProfileView(doctor: doctor)) {
+                        RecommendedDoctorCard(doctor: doctor)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal, 24)
         }
     }
-
     // MARK: - Nearby Vertical List
     private var nearbyList: some View {
         VStack(spacing: 12) {
             ForEach(vm.nearbyDoctors) { doctor in
-                NearbyDoctorCard(doctor: doctor)
+                NavigationLink(destination: DoctorProfileView(doctor: doctor)) {
+                    NearbyDoctorCard(doctor: doctor)
+                }
+                .buttonStyle(.plain)
             }
         }
-    }
-
-    // MARK: - Empty State
+    }    // MARK: - Empty State
     private var emptyState: some View {
         VStack(spacing: 16) {
             Image(systemName: "magnifyingglass")

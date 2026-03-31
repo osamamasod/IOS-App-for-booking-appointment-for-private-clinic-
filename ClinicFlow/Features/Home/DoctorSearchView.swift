@@ -73,7 +73,10 @@ struct DoctorSearchView: View {
                         } else {
                             VStack(spacing: 12) {
                                 ForEach(vm.results) { doctor in
-                                    SearchResultCard(doctor: doctor)
+                                    NavigationLink(destination: DoctorProfileView(doctor: doctor)) {
+                                        SearchResultCard(doctor: doctor)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
                             .padding(.horizontal, 24)
