@@ -3,7 +3,7 @@ import SwiftUI
 struct SlotSelectionView: View {
     @StateObject private var vm: SlotSelectionViewModel
     @Environment(\.dismiss) private var dismiss
-
+    @State private var navigateToPaymentMethod = false
     var onContinue: ((ScheduleSlot) -> Void)?
 
     init(
@@ -56,6 +56,19 @@ struct SlotSelectionView: View {
         .toolbar(.hidden, for: .navigationBar)
         .animation(.spring(response: 0.35, dampingFraction: 0.8), value: vm.selectedDateIndex)
         .animation(.spring(response: 0.35, dampingFraction: 0.8), value: vm.selectedSlot?.id)
+        .navigationDestination(isPresented: $navigateToPaymentMethod) {
+            if let slot = vm.selectedSlot {
+                PaymentMethodView(
+                    doctor: vm.doctor,
+                    clinic: vm.clinic,
+                    service: vm.service,
+                    slot: slot,
+                    appointmentDateText: selectedAppointmentDateText
+                )
+            } else {
+                EmptyView()
+            }
+        }
     }
 
     // MARK: - Ambient blobs
@@ -75,7 +88,9 @@ struct SlotSelectionView: View {
         }
         .ignoresSafeArea()
     }
-
+    private var selectedAppointmentDateText: String {
+        "\(vm.selectedDate.dayShort), \(vm.selectedDate.dayNumber) \(vm.selectedDate.monthYear)"
+    }
     // MARK: - Nav Bar
     private var navBar: some View {
         HStack {
@@ -454,9 +469,8 @@ struct SlotSelectionView: View {
             }
 
             Button(action: {
-                if let slot = vm.selectedSlot {
-                    onContinue?(slot)
-                }
+                guard vm.canContinue else { return }
+                navigateToPaymentMethod = true
             }) {
                 HStack(spacing: 8) {
                     Image(systemName: "creditcard.fill")
